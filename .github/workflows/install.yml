@@ -1,0 +1,28 @@
+name: Homebrew installation
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  install:
+    runs-on: macos-latest
+    timeout-minutes: 15
+    steps:
+      - name: Verify this is a fresh tap installation
+        run: |
+          if brew tap | grep -Fxq suzu1dev/bell-pr; then
+            echo "::error::The BELL PR tap must not already be installed."
+            exit 1
+          fi
+      - name: Install with one command
+        run: brew install suzu1dev/bell-pr/bell-pr
+      - name: Verify the formula and CLI
+        run: |
+          brew test suzu1dev/bell-pr/bell-pr
+          bell-pr --version
+          bell-pr --help
